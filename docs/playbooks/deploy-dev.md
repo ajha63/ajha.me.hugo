@@ -28,11 +28,28 @@ CLOUDFRONT_DISTRIBUTION_ID=<id-cloudfront-dev>
 
 1. Crear una rama de trabajo desde `develop`.
 2. Hacer cambios en contenido, estilos o layouts.
-3. Abrir pull request hacia `develop`.
-4. Confirmar que el job `Validate Hugo build` pase correctamente.
-5. Hacer merge a `develop`.
-6. GitHub Actions ejecutara el deploy al environment `dev`.
-7. Validar `https://dev.ajha.me/`.
+3. Para posts nuevos, crear el contenido con el archetype de posts:
+
+   ```bash
+   hugo new content posts/slug-del-post
+   ```
+
+4. Completar `description`, `tags` y, cuando aplique, `categories` en
+   `content/posts/slug-del-post/index.md`.
+5. Mantener `draft = true` solo si el objetivo de dev es una revision con
+   borradores; usar `draft = false` si el post debe validarse como se vera en
+   QA y produccion.
+6. Ejecutar build local:
+
+   ```bash
+   hugo --gc --minify
+   ```
+
+7. Abrir pull request hacia `develop`.
+8. Confirmar que el job `Validate Hugo build` pase correctamente.
+9. Hacer merge a `develop`.
+10. GitHub Actions ejecutara el deploy al environment `dev`.
+11. Validar `https://dev.ajha.me/`.
 
 ## Deploy manual
 
@@ -51,3 +68,5 @@ CLOUDFRONT_DISTRIBUTION_ID=<id-cloudfront-dev>
 3. Las imagenes se ven correctamente.
 4. No hay contenido de prueba accidental.
 5. El sitemap y `robots.txt` existen.
+6. Si el cambio incluye un post nuevo, el bundle fue creado con
+   `archetypes/posts/index.md` y la metadata editorial esta completa.

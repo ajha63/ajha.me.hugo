@@ -33,12 +33,17 @@ CLOUDFRONT_DISTRIBUTION_ID=E1P9ZMYQ99M9A
 1. Confirmar que `qa` fue validado funcional y visualmente.
 2. Abrir pull request de `qa` hacia `main`.
 3. Revisar diferencias de contenido, imagenes, metadata y configuracion.
-4. Confirmar que el job `Validate Hugo build` pase correctamente.
-5. Aprobar el pull request.
-6. Hacer merge a `main`.
-7. Aprobar el deployment del environment `prod` cuando GitHub lo solicite.
-8. Esperar a que finalice la sincronizacion S3 y la invalidacion CloudFront.
-9. Validar `https://ajha.me/`.
+4. Si el cambio incluye posts nuevos, confirmar que el bundle proviene del
+   archetype `archetypes/posts/index.md` y que `description`, `tags` y
+   `categories` fueron revisados.
+5. Confirmar que no avanza ningun post con `draft = true`, placeholders o
+   metadata editorial vacia.
+6. Confirmar que el job `Validate Hugo build` pase correctamente.
+7. Aprobar el pull request.
+8. Hacer merge a `main`.
+9. Aprobar el deployment del environment `prod` cuando GitHub lo solicite.
+10. Esperar a que finalice la sincronizacion S3 y la invalidacion CloudFront.
+11. Validar `https://ajha.me/`.
 
 ## Deploy manual
 
@@ -60,6 +65,8 @@ CLOUDFRONT_DISTRIBUTION_ID=E1P9ZMYQ99M9A
 5. No hay borradores publicados.
 6. El contenido final no incluye placeholders.
 7. La distribucion CloudFront no sirve una version anterior despues de la invalidacion.
+8. Si hay posts nuevos, la URL `/posts/slug-del-post/` responde y el listado
+   `/posts/` muestra titulo, fecha y resumen correctos.
 
 ## Rollback
 

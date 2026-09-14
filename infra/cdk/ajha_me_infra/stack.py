@@ -25,7 +25,7 @@ CERTIFICATE_ARN = (
 GITHUB_OIDC_PROVIDER_ARN = (
     "arn:aws:iam::554982632606:oidc-provider/token.actions.githubusercontent.com"
 )
-GITHUB_REPOSITORY_SUBJECT = "repo:ajha63@560156/ajha.me.hugo@1369952238"
+GITHUB_REPOSITORY_SUBJECT = "repo:ajha63/ajha.me.hugo@1369952238"
 
 
 class AjhaMeStack(cdk.Stack):

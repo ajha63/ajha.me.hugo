@@ -29,10 +29,16 @@ CLOUDFRONT_DISTRIBUTION_ID=<id-cloudfront-qa>
 1. Confirmar que `develop` ya fue validado en `dev`.
 2. Abrir pull request de `develop` hacia `qa`.
 3. Revisar contenido, navegacion, assets y cambios visuales.
-4. Confirmar que el job `Validate Hugo build` pase correctamente.
-5. Hacer merge a `qa`.
-6. GitHub Actions ejecutara el deploy al environment `qa`.
-7. Validar `https://qa.ajha.me/`.
+4. Si el cambio incluye posts nuevos, confirmar que fueron creados como page
+   bundles con `hugo new content posts/slug-del-post`.
+5. Revisar front matter editorial: `title`, `date`, `draft`, `description`,
+   `tags` y `categories`.
+6. Confirmar que `draft = false` para cualquier post que deba avanzar como
+   candidato de publicacion.
+7. Confirmar que el job `Validate Hugo build` pase correctamente.
+8. Hacer merge a `qa`.
+9. GitHub Actions ejecutara el deploy al environment `qa`.
+10. Validar `https://qa.ajha.me/`.
 
 ## Deploy manual
 
@@ -52,3 +58,6 @@ CLOUDFRONT_DISTRIBUTION_ID=<id-cloudfront-qa>
 4. Confirmar imagenes optimizadas en WebP.
 5. Revisar que CloudFront sirva la version nueva despues de la invalidacion.
 6. Registrar hallazgos antes de promover a produccion.
+7. Si hay posts nuevos, validar la URL directa
+   `/posts/slug-del-post/`, su aparicion en `/posts/` y que no conserve
+   metadata vacia generada por el archetype.
