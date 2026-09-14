@@ -1,0 +1,8 @@
+{
+  "name": "ajha-me-cdk",
+  "private": true,
+  "version": "1.0.0",
+  "devDependencies": {
+    "aws-cdk": "2.1141.0"
+  }
+}

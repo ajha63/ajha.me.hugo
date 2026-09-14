@@ -1,0 +1,30 @@
+{{ define "main" }}
+  <section class="page shell">
+    <header class="page-header">
+      <p class="eyebrow">AJHA</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+    </header>
+    {{ with .Params.image }}
+      {{ with resources.Get . }}
+        {{ $banner := .Fill "1440x560 Center webp q82" }}
+        <figure class="page-banner">
+          <img src="{{ $banner.RelPermalink }}" width="{{ $banner.Width }}" height="{{ $banner.Height }}" alt="Banner editorial de lectura para Posts / Insights">
+        </figure>
+      {{ end }}
+    {{ end }}
+    <div class="prose">
+      {{ .Content }}
+    </div>
+    {{ if .Pages }}
+      <div class="card-grid list-grid">
+        {{ range .Pages }}
+          <article class="card">
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            <p>{{ .Summary }}</p>
+          </article>
+        {{ end }}
+      </div>
+    {{ end }}
+  </section>
+{{ end }}

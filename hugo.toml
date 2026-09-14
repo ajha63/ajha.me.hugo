@@ -1,0 +1,49 @@
+baseURL = 'https://ajha.me/'
+locale = 'es-MX'
+defaultContentLanguage = 'es'
+title = 'AJHA'
+enableRobotsTXT = true
+summaryLength = 24
+
+[languages]
+  [languages.es]
+    label = 'Español'
+    locale = 'es-MX'
+    weight = 1
+
+[params]
+  description = 'Sitio personal sobre cloud operations, soporte TI, automatizacion e inteligencia artificial aplicada.'
+  author = 'AJHA'
+  email = ''
+  location = 'Monterrey, Mexico'
+
+[menus]
+  [[menus.main]]
+    name = 'Inicio'
+    pageRef = '/'
+    weight = 10
+  [[menus.main]]
+    name = 'Sobre mi'
+    pageRef = '/sobre-mi'
+    weight = 20
+  [[menus.main]]
+    name = 'Experiencia'
+    pageRef = '/experiencia'
+    weight = 30
+  [[menus.main]]
+    name = 'Servicios'
+    pageRef = '/servicios'
+    weight = 40
+  [[menus.main]]
+    name = 'Posts'
+    pageRef = '/posts'
+    weight = 50
+  [[menus.main]]
+    name = 'Contacto'
+    pageRef = '/contacto'
+    weight = 60
+
+[deployment]
+  [[deployment.targets]]
+    name = 'production'
+    url = 's3://hugo-ajha-me?region=us-east-1'

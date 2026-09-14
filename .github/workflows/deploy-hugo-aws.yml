@@ -1,0 +1,198 @@
+name: Deploy Hugo site to AWS
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - qa
+      - main
+  push:
+    branches:
+      - develop
+      - qa
+      - main
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Environment to deploy
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && inputs.stage || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  HUGO_VERSION: 0.166.0
+  HUGO_ENVIRONMENT: production
+  HUGO_ENV: production
+
+jobs:
+  resolve-stage:
+    name: Resolve deployment stage
+    runs-on: ubuntu-24.04
+    outputs:
+      stage: ${{ steps.resolve.outputs.stage }}
+    steps:
+      - name: Resolve stage from trigger
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          stage="none"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            stage="${{ inputs.stage }}"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            case "${GITHUB_REF_NAME}" in
+              develop) stage="dev" ;;
+              qa) stage="qa" ;;
+              main) stage="prod" ;;
+            esac
+          fi
+
+          echo "stage=${stage}" >> "${GITHUB_OUTPUT}"
+          echo "Resolved stage: ${stage}"
+
+  validate:
+    name: Validate Hugo build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install Hugo
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          hugo_deb="hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          checksums="hugo_${HUGO_VERSION}_checksums.txt"
+          release_url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}"
+
+          curl --fail --silent --show-error --location \
+            --output "${RUNNER_TEMP}/${hugo_deb}" \
+            "${release_url}/${hugo_deb}"
+          curl --fail --silent --show-error --location \
+            --output "${RUNNER_TEMP}/${checksums}" \
+            "${release_url}/${checksums}"
+
+          cd "${RUNNER_TEMP}"
+          grep " ${hugo_deb}$" "${checksums}" > hugo.sha256
+          sha256sum --check hugo.sha256
+          sudo dpkg --install "${hugo_deb}"
+          hugo version
+
+      - name: Build site
+        shell: bash
+        run: hugo --gc --minify --baseURL "https://example.invalid/"
+
+  deploy:
+    name: Deploy to ${{ needs.resolve-stage.outputs.stage }}
+    needs:
+      - resolve-stage
+      - validate
+    if: ${{ needs.resolve-stage.outputs.stage != 'none' }}
+    runs-on: ubuntu-24.04
+    environment:
+      name: ${{ needs.resolve-stage.outputs.stage }}
+      url: ${{ vars.SITE_BASE_URL }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ROLE_TO_ASSUME: ${{ vars.AWS_ROLE_TO_ASSUME }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
+      STAGE: ${{ needs.resolve-stage.outputs.stage }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate environment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_vars=(
+            AWS_ACCOUNT_ID
+            AWS_REGION
+            AWS_ROLE_TO_ASSUME
+            S3_BUCKET
+            SITE_BASE_URL
+          )
+
+          for var_name in "${required_vars[@]}"; do
+            if [[ -z "${!var_name:-}" ]]; then
+              echo "::error::Missing required GitHub Environment variable: ${var_name}"
+              exit 1
+            fi
+          done
+
+      - name: Install Hugo
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          hugo_deb="hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          checksums="hugo_${HUGO_VERSION}_checksums.txt"
+          release_url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}"
+
+          curl --fail --silent --show-error --location \
+            --output "${RUNNER_TEMP}/${hugo_deb}" \
+            "${release_url}/${hugo_deb}"
+          curl --fail --silent --show-error --location \
+            --output "${RUNNER_TEMP}/${checksums}" \
+            "${release_url}/${checksums}"
+
+          cd "${RUNNER_TEMP}"
+          grep " ${hugo_deb}$" "${checksums}" > hugo.sha256
+          sha256sum --check hugo.sha256
+          sudo dpkg --install "${hugo_deb}"
+          hugo version
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          role-session-name: ajha-me-${{ env.STAGE }}-${{ github.run_id }}
+
+      - name: Build site for target URL
+        shell: bash
+        run: hugo --gc --minify --baseURL "${SITE_BASE_URL}"
+
+      - name: Sync site to S3
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          aws s3 sync public/ "s3://${S3_BUCKET}/" \
+            --delete \
+            --cache-control "public,max-age=300" \
+            --metadata-directive REPLACE
+
+      - name: Invalidate CloudFront cache
+        if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          aws cloudfront create-invalidation \
+            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+            --paths "/*"

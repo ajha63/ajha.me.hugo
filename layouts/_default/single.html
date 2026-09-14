@@ -1,0 +1,22 @@
+{{ define "main" }}
+  <article class="page shell">
+    <header class="page-header{{ with .Params.image }} page-header-grid{{ end }}">
+      <div>
+        <p class="eyebrow">AJHA</p>
+        <h1>{{ .Title }}</h1>
+        {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+      </div>
+      {{ with .Params.image }}
+        {{ with resources.Get . }}
+          {{ $pageImage := .Fill "640x560 Center webp q82" }}
+          <figure class="page-media portrait-media">
+            <img src="{{ $pageImage.RelPermalink }}" width="{{ $pageImage.Width }}" height="{{ $pageImage.Height }}" alt="Retrato profesional de AJHA">
+          </figure>
+        {{ end }}
+      {{ end }}
+    </header>
+    <div class="prose">
+      {{ .Content }}
+    </div>
+  </article>
+{{ end }}

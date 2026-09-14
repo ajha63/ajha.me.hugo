@@ -1,0 +1,98 @@
+{{ define "main" }}
+  {{ $profile := resources.Get "images/profile/alvaro-hernandez-2026-05.jpg" }}
+  {{ $profileHero := $profile.Fill "720x860 Center webp q82" }}
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Cloud Operations • Soporte TI • IA Aplicada</p>
+        <h1>Arquitectura operativa para tecnologia que si sostiene el negocio.</h1>
+        <p class="lead">{{ .Content }}</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="/servicios/">Ver servicios</a>
+          <a class="button button-secondary" href="/contacto/">Conectar</a>
+        </div>
+        <dl class="metrics" aria-label="Enfoques principales">
+          <div>
+            <dt>Cloud</dt>
+            <dd>AWS y operaciones</dd>
+          </div>
+          <div>
+            <dt>ITSM</dt>
+            <dd>Soporte y procesos</dd>
+          </div>
+          <div>
+            <dt>IA</dt>
+            <dd>Automatizacion aplicada</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="hero-visual hero-portrait" aria-label="Retrato profesional de AJHA">
+        <img src="{{ $profileHero.RelPermalink }}" width="{{ $profileHero.Width }}" height="{{ $profileHero.Height }}" alt="Retrato profesional de AJHA">
+        <div class="signal-card portrait-card">
+          <span>01</span>
+          <strong>Diagnostico</strong>
+          <p>Visibilidad sobre sistemas, procesos y puntos de friccion.</p>
+        </div>
+        <div class="signal-card portrait-card">
+          <span>02</span>
+          <strong>Operacion</strong>
+          <p>Practicas repetibles para soporte, continuidad y mejora.</p>
+        </div>
+        <div class="signal-card portrait-card">
+          <span>03</span>
+          <strong>Automatizacion</strong>
+          <p>Herramientas e IA para reducir trabajo manual y acelerar respuesta.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-light">
+    <div class="shell split">
+      <div>
+        <p class="eyebrow">Sobre mi</p>
+        <h2>Tecnologia explicada desde la operacion real.</h2>
+      </div>
+      <div class="prose">
+        <p>Este sitio sera el punto central para presentar perfil profesional, experiencia, servicios y publicaciones sobre tecnologia aplicada a operaciones modernas.</p>
+        <p>La estructura prioriza lectura rapida, navegacion clara y contenido que pueda crecer sin romper el sitio.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <div class="section-heading">
+        <p class="eyebrow">Servicios</p>
+        <h2>Formas de colaborar</h2>
+      </div>
+      <div class="card-grid">
+        <article class="card">
+          <h3>Cloud Operations</h3>
+          <p>Revision de practicas operativas, monitoreo, continuidad, soporte y documentacion para entornos AWS.</p>
+        </article>
+        <article class="card">
+          <h3>Automatizacion TI</h3>
+          <p>Identificacion de tareas repetitivas y diseno de flujos para reducir errores y mejorar tiempos de respuesta.</p>
+        </article>
+        <article class="card">
+          <h3>IA aplicada</h3>
+          <p>Exploracion de casos de uso responsables para soporte, operaciones, documentacion y toma de decisiones.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="shell split">
+      <div>
+        <p class="eyebrow">Posts / Insights</p>
+        <h2>Un archivo vivo de aprendizajes tecnicos.</h2>
+      </div>
+      <div class="prose">
+        <p>La seccion de publicaciones queda preparada para crecer con articulos sobre AWS, operaciones, soporte, DevOps, gobierno, metricas e inteligencia artificial.</p>
+        <a class="button button-secondary" href="/posts/">Explorar posts</a>
+      </div>
+    </div>
+  </section>
+{{ end }}

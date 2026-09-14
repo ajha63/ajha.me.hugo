@@ -1,0 +1,50 @@
+# Created by https://www.toptal.com/developers/gitignore/api/hugo
+# Edit at https://www.toptal.com/developers/gitignore?templates=hugo
+
+### filesystem ###
+.DS_Store
+
+### Hugo ###
+# Generated files by hugo
+# Directorio de compilacion (Sitio web generado)
+/public/
+/resources/_gen/
+/.pytest_cache/
+**/__pycache__/
+*.py[cod]
+infra/cdk/.venv/
+infra/cdk/cdk.out/
+infra/cdk/cdk-outputs.json
+
+# Archivos de cache y temporales de Hugo
+/.hugo_build.lock
+/.hugo_cache/
+/assets/jsconfig.json
+
+# Entornos locales y variables secretas
+.env
+.env.*
+!.env.example
+
+# Dependencias de Node.js (Si usas PostCSS, Tailwind, etc.)
+**/node_modules/
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
+
+# Archivos especificos del Sistema Operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Carpetas de configuracion de editores/IDE
+/.idea/
+/.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+# End of https://www.toptal.com/developers/gitignore/api/hugo

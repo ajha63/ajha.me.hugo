@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="{{ site.Language.Locale | default "es-MX" }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+    <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
+    {{ $styles := resources.Get "css/main.css" | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}">
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Principal">
+        <a class="brand" href="{{ site.Home.RelPermalink }}" aria-label="{{ site.Title }} inicio">
+          <span class="brand-mark">AJ</span>
+          <span>Alvaro Hernández</span>
+        </a>
+        <div class="nav-links">
+          {{ range site.Menus.main }}
+            <a href="{{ .URL }}" {{ if $.IsMenuCurrent .Menu . }}aria-current="page"{{ end }}>{{ .Name }}</a>
+          {{ end }}
+        </div>
+      </nav>
+    </header>
+    <main id="contenido">
+      {{ block "main" . }}{{ end }}
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div>
+          <strong>AJHA</strong>
+          <p>Cloud operations, soporte TI, automatizacion e IA aplicada.</p>
+        </div>
+        <div>
+          <span>Publicado con Hugo para AWS S3 + CloudFront.</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
